@@ -1,0 +1,102 @@
+DO NOT DO CONCURRENT PROGRAMMING
+Instead we are doing Discreet event simulation
+not a time slice simulation (no timer running)
+"A time slice simulator has a timeline, descreet event simulatons dont, if we were to use a timeline as an example, the 'timeline' of a time slice measures time, DES is measured in events, we add the timer on at the end. Time is just a metric, a variable that we are going to increment by large numbers."
+
+M is average processing time
+N is the Range of processing time
+P is the Processing time
+T1 Start time
+T2 end time
+d is a random number from 0-1
+QMax is the maximum number of things that can be in the queue.
+
+
+This assignment simulates the production of widgets
+the process is made of stages seperated by queues
+
+Queue Class contains
+var Qmax
+Wrap ArrayList
+bool isFull()
+
+
+Stage class Abstract Polymorphism and inheritance
+Start Stage needs Push and Pull
+Inner Stage needs Push and Pull
+End Stage needs Push and Pull
+
+
+
+IDGen <Singleton>
+	getID()
+Start Stage S0
+Inter Stage S1
+End Stage S2
+Stat Store
+
+
+Job comparable
+Stage
+Time Compare Time
+
+
+back at the start we have a priority queue
+PQueue - Jobs
+Job: Stage - Time
+
+take thing off the priority queue, advance time to whatever it needs to be sent to.
+
+with 'Job' at time 'now+1000(an amount of time that the widget takes to make thing)' do something.
+
+Loop through, go to the priority queue
+take the 'do something' time and advance global time to that number
+hit S0.pull. make another widget, create another job
+Job at S0 will finish at 1500.
+is there anything to unblock or unstarve?
+S2 nothing in queue idc
+S1 can now pull W1 into the Stage from the Queue
+Give it a production time of 1400
+Job at S1 at 2400
+nothing else starved or blocked unnecesarily, restart on next loop
+Go to priority queue, increment time based on the TOP of priority queue.
+go to S0 its done, put W2 in the Queue
+Add W3 with 600 time, Job at S0 at 2100, add to queue
+nothing to unstarve S2
+S1 is working
+Q01 has an item, but is blocked
+S0 is working
+done
+go again
+W4 at S0 with 500 Job at S0 at 2600
+Nothing in S2 or Q12
+S1 still working,
+Q01 full doesnt matter rn
+S0 working
+go again
+Priority Queue
+advance time
+S2 still nothing
+Q12 now has W1
+W2 done
+S1 now has W2 for 1400,done at 3000
+Q01 loses W2 and is empty
+
+When blockage, put the blocked Job back into the priority queue at the point of the next Action, it will go after the next one, based on priority queue.
+
+W1 is done, nothing to pull anymore, so S2 starves again, nothing we can do.
+S1 still working, S0 still blocked, set Job S0 to the time (find time on top of priority queue, copy it)
+
+
+have this simulation loop in A3
+Have the Priority Queue in A3
+
+When working on it, start with a Start State, Queue and End State, limit timer to 10,000 and step through
+interstage just copies the push from Start Stage and the Pull from the End Stage
+
+Note on HOW to collect Statistics, look into it, please.
+tie breaker on who gets to move first, (in the instance of where S0a and S0b finish at the same time.)
+
+AVG Widgets in queue across the whole system is complicated.
+In a widget append the Name of the Stage to a string when it enters a new stage
+

@@ -1,0 +1,6 @@
+<Singleton> Class
+a class that is only instantiated once, and is shared around where needed.
+has a private instructor that is either instantiated the FIRST time it is USED, or at program START
+
+
+When testing, Make a version of the Program that only contains the Start Stage and the End Stage, the Interstage just copies from the Start and End, so it doesnt need to be there for simple testing

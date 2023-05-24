@@ -19,9 +19,20 @@ public class StartStage extends Stage{
      * Start Stage when making a new Widget, uses P for the Processing time, where P = M+(N*(d-0.5)) (d is a random number from 1 to 0)
      */
 
+
+     private void setNext(Queue newNext){
+        next = newNext;
+    }
+    private void setPrev(Queue newPrev){
+        prev = newPrev;
+    }
+
      private void push(){
         // Take Widget in this stage and move it to the next queue, if possible (not blocked).
         
+    }
+    private void pull(){
+        // Generate a brand new Widget, processing time and all, then when it is done, push().
     }
 
 }

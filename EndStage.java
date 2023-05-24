@@ -14,6 +14,13 @@ public class EndStage extends Stage{
 
 
         
+        private void setNext(Queue newNext){
+                next = newNext;
+            }
+        private void setPrev(Queue newPrev){
+                prev = newPrev;
+            }
+
 
 
 }

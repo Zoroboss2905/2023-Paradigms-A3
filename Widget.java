@@ -9,4 +9,8 @@
 
 public class Widget{
     
+    private Statistics stats;
+
+
+
 }

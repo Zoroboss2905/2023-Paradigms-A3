@@ -13,6 +13,15 @@ public class InterStage extends Stage{
     private Queue prev;
 
 
+
+
+    private void setNext(Queue newNext){
+        next = newNext;
+    }
+    private void setPrev(Queue newPrev){
+        prev = newPrev;
+    }
+
     /*
      * can just tell the widgets to go to a unless full, then go b if a is full.
      * it doesnt really matter though, theyll both be working pretty much at all times.

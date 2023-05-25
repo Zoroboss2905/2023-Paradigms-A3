@@ -17,6 +17,16 @@
 class A3{
     public static void main(String args[]){
 
+        final int QMax = Integer.parseInt(args[2]);
+        final Stage s0, s1;
+        final Queue q01;
+        final StatStore statStore = new StatStore();
+
+
+        s0 = new StartStage();
+        s1 = new EndStage();
+
+        q01 = new Queue(QMax, "q12");
         /*
          * args[0] is M (AVG Processing time)
          * args[1] is N (Range of processing time)
@@ -25,5 +35,9 @@ class A3{
          * 
          * Priority Queue contains Jobs.
          */
+
+
+
+         statStore.fullOutput();
     }
 }

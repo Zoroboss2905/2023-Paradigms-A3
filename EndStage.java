@@ -9,15 +9,48 @@
 
 public class EndStage extends Stage{
 
-        private Queue next;
-        private Queue prev;
+    private Queue next = null;
+    private Queue prev;
+    private String currentState;    // Either 'Idle', 'Active', 'Blocked' or 'Starved'
+    private double lastUpdate;
+
+    // STAGE STATS
+    private double sTime;           // Starve Time
+    private double wTime;           // Working Time
+    private double bTime;           // Blocked Time
+    private int widgetSpawn;        // The number of widgets created on THIS Stage.
+
+    // Stage stat Getters
+    public double getSTime(){
+        return this.sTime;
+    }
+    public double getWTime(){
+        return this.wTime;
+    }
+    public double getBTime(){
+        return this.bTime;
+    }
+    public int getWidgetSpawnCount(){
+        return 0;
+    }
+    public void spawnWidget(){}
+
+    // When a widget reaches the end, it also needs to increment a number depending on where it was created (either 0a or 0b).
+
+
+
+    public void go(){
+    // Function that is intended to use with the full program, when this function is called it will check 'this' stage to determine whether or not any action can be taken.
+    // First it determines wether the current 'Job' is complete, then attempts to push() to the next queue, withholding and delaying the job if the queue is full.
+    // Next, if the Stage is empty, attempt to pull() from the previous queue and begin a new job
+    }
 
 
         
-        private void setNext(Queue newNext){
+        public void setNext(Queue newNext){
                 next = newNext;
             }
-        private void setPrev(Queue newPrev){
+        public void setPrev(Queue newPrev){
                 prev = newPrev;
             }
 

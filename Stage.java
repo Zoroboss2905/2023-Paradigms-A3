@@ -6,33 +6,75 @@
 //
 
 
-public class Stage {
+public abstract class Stage {
     
     private Queue next;
     private Queue prev;
+    private int currentState;       // Either -1: starved, 0: busy or 1: blocked
+    private double lastUpdate;
+    private double processingTime;
+    private String name;
 
 
-    private void proceed(){
-        // Function that is intended to use with the full program, when this function is called it will check 'this' stage to determine whether or not any action can be taken.
-        // First it determines wether the current 'Job' is complete, then attempts to push() to the next queue, withholding and delaying the job if the queue is full.
-        // Next, if the Stage is empty, attempt to pull() from the previous queue and begin a new job
+    // STAGE STATS
+    private double sTime;           // Starve Time
+    private double wTime;           // Working Time
+    private double bTime;           // Blocked Time
+
+    public Stage(String name){
+        sTime = 0;
+        wTime = 0;
+        bTime = 0;
+        lastUpdate = 0;
+        processingTime = 0;
     }
 
 
+    // Stage stat Getters
+    public double getSTime(){
+        return this.sTime;
+    }
+    public double getWTime(){
+        return this.wTime;
+    }
+    public double getBTime(){
+        return this.bTime;
+    }
+    public abstract int getWidgetSpawnCount();
+    public abstract void spawnWidget();
 
-    private void setNext(Queue newNext){
+    public abstract void go();
+
+    public void setNext(Queue newNext){
         next = newNext;
     }
-    private void setPrev(Queue newPrev){
+    public void setPrev(Queue newPrev){
         prev = newPrev;
     }
 
-    private void push(){
+
+    public void addSTime(){
+
+    }
+    public void addWTime(){
+
+    }
+    public void addBTime(){
+        
+    }
+
+    public void push(){
         // Take Widget in this stage and move it to the next queue, if possible (not blocked).
     }
-    private void pull(){
+    public void pull(){
         // Take Widget from prev queue and add it to this stage.
         // Preconditions: Stage empty, Widget in prev queue
+    }
+
+    public void setCurrentState(int s, double currentTime){
+        if (currentState == s){
+
+        } 
     }
 
 }

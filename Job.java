@@ -42,12 +42,6 @@ public class Job implements Comparable<Job>{
         return duration;
     }
     
-    /*
-     * Each Job is comparable to each other, for sake of the priority queue.
-     * The only thing compared is the execution time.
-     */
-
-
      // each job contains reference to a widget and a stage, in addition to a "Completion time"
     
 

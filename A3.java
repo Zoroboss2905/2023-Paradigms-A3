@@ -5,7 +5,7 @@
 // 12/05/2023   ||  12/05/2023
 //
 
-
+import java.util.PriorityQueue;
 
 // First test should be StartStage,Queue,EndStage
 // Second test should be Start, Queue, Inter, Queue, End
@@ -17,10 +17,11 @@
 class A3{
     public static void main(String args[]){
 
-        final int QMax = Integer.parseInt(args[2]);
-        final Stage s0, s1;
-        final Queue q01;
-        final StatStore statStore = new StatStore();
+        int QMax = Integer.parseInt(args[2]);
+        Stage s0, s1;
+        Queue q01;
+        StatStore statStore = new StatStore();
+        PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();         // peek takes info, poll takes info and removes element
 
 
         s0 = new StartStage();

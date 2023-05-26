@@ -32,6 +32,13 @@ public class Queue {
             return false;
         }
     }
+    public boolean isEmpty(){
+        if(myList.size()==0){
+            return true;
+        } else{
+            return false;
+        }
+    }
 
     public boolean addToQueue(Widget newWidget){
         if(isFull() == false){

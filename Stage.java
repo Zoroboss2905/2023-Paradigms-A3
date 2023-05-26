@@ -36,7 +36,7 @@ public abstract class Stage {
     public abstract int getWidgetSpawnCount();
     public abstract void spawnWidget();
 
-    public abstract void go();
+    public abstract void go(double t);
 
     public void setNext(Queue newNext){
         next = newNext;
@@ -83,19 +83,32 @@ public abstract class Stage {
     }
 
     public boolean push(){
-        // Take Widget in this stage and move it to the next queue, if possible (not blocked).
+        // First check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
         if(next.isFull()){
             currentState = 1;
             return false;
         } else {
+            // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
             next.addToQueue(storedWidget);
             storedWidget = null;
+            currentState = -1;
             return true;
         }
     }
-    public void pull(){
+    public boolean pull(){
         // Take Widget from prev queue and add it to this stage.
         // Preconditions: Stage empty, Widget in prev queue
+        if(storedWidget != null){
+            return false;   // Already has a widget inside.
+        } else if(prev.isEmpty() == true){
+            currentState = -1;
+            return false;   // There is nothing to pull, therefore Starved.
+        } else{
+            // All conditions are met, pull the item from prev and place it in the Stage.
+            Widget tempWidget = prev.removeFromQueue();
+            storedWidget = tempWidget;
+            // also apply a time and create a new job.
+        }
     }
 
     public void setCurrentState(int s, double currentTime){

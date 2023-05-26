@@ -16,6 +16,9 @@ public abstract class Stage {
     private double processingTime;
     private String name;
     private Widget storedWidget;
+    private int mean;
+    private int range;
+    private Scheduler scheduler;
 
 
     // STAGE STATS
@@ -23,7 +26,7 @@ public abstract class Stage {
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public Stage(String newName){
+    public Stage(String newName, int newMean, int newRange, Scheduler newScheduler){
         sTime = 0;
         wTime = 0;
         bTime = 0;
@@ -31,6 +34,9 @@ public abstract class Stage {
         processingTime = 0;
         name = newName;
         storedWidget = null;
+        mean = newMean;
+        range = newRange;
+        scheduler = newScheduler;
     }
 
     public abstract int getWidgetSpawnCount();
@@ -64,7 +70,7 @@ public abstract class Stage {
     public void setProcessingTime(int m, int n){
         Random r = new Random();
         double d = r.nextDouble();
-        processingTime = m+n*(d-0.5);
+        processingTime = m + n*(d-0.5);
     }
 
     public String getSTime(){
@@ -95,6 +101,7 @@ public abstract class Stage {
             return true;
         }
     }
+    
     public boolean pull(){
         // Take Widget from prev queue and add it to this stage.
         // Preconditions: Stage empty, Widget in prev queue
@@ -106,8 +113,11 @@ public abstract class Stage {
         } else{
             // All conditions are met, pull the item from prev and place it in the Stage.
             Widget tempWidget = prev.removeFromQueue();
+            setProcessingTime(mean, range);
             storedWidget = tempWidget;
+            scheduler.addToPQueue(this, getProcessingTime());
             // also apply a time and create a new job.
+            return true;
         }
     }
 
@@ -135,8 +145,6 @@ public abstract class Stage {
             }
             currentState = s;
             lastUpdate = currentTime;
-
         }
     }
-
 }

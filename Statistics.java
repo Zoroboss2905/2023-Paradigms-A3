@@ -36,7 +36,4 @@ public class Statistics {
     public double getQWidgetUptime(){
         return qWidgetUptime;
     }
-    // TODO:
-    // Rework the Queue Stats, they currently dont make enough sense.
-
 }

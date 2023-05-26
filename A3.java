@@ -5,7 +5,6 @@
 // 12/05/2023   ||  12/05/2023
 //
 
-import java.util.PriorityQueue;
 
 // First test should be StartStage,Queue,EndStage
 // Second test should be Start, Queue, Inter, Queue, End
@@ -17,28 +16,29 @@ import java.util.PriorityQueue;
 class A3{
     public static void main(String args[]){
 
+        int M = Integer.parseInt(args[0]);      // Average Processing Time
+        int N = Integer.parseInt(args[1]);      // Range of Processing Time
         int QMax = Integer.parseInt(args[2]);
+        double timeLimit = 10000000;            // 10 Million units of 'Time'
         Stage s0, s1;
         Queue q01;
         StatStore statStore = new StatStore();
-        PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();         // peek takes info, poll takes info and removes element
+        Scheduler scheduler = Scheduler.getInstance();
 
 
-        s0 = new StartStage();
-        s1 = new EndStage();
+        s0 = new StartStage("s0", M, N, scheduler);
+        s1 = new EndStage("s1", M, N, scheduler);
 
         q01 = new Queue(QMax, "q12");
-        /*
-         * args[0] is M (AVG Processing time)
-         * args[1] is N (Range of processing time)
-         * args[2] is QMax
-         * 
-         * 
-         * Priority Queue contains Jobs.
-         */
 
 
+        scheduler.addToPQueue(s0, 0);
+        scheduler.addToPQueue(s1, 0);
 
-         statStore.fullOutput();
+        while(scheduler.getCurrentTime()<timeLimit){
+            // Run the Program, start to finish for 10Mil units of time
+        }
+
+        statStore.fullOutput();
     }
 }

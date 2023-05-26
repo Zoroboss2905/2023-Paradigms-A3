@@ -9,18 +9,17 @@
 
 public class Job implements Comparable<Job>{
 
-    private double duration;
+    private double completionTime;
     private Stage currentStage;
 
     public Job(){
-        duration = 0;
+        completionTime = 0;
     }
 
-    public Job(double currentTime, Stage s){
+    public Job(double newCompletionTime, Stage s){
         currentStage = s;
-        duration = currentTime;
+        completionTime = newCompletionTime;
     }
-
 
     public void finishJob(double time){
         currentStage.go(time);
@@ -35,30 +34,28 @@ public class Job implements Comparable<Job>{
     }
 
     
-    public void setCurrentTime(double newTime){
-        duration = newTime;
+    public void setCompletionTime(double newTime){
+        completionTime = newTime;
     }
-    public double getCurrentTime(){
-        return duration;
+    public double getCompletionTime(){
+        return completionTime;
     }
-    
-     // each job contains reference to a widget and a stage, in addition to a "Completion time"
-    
+       
 
      @Override
     public int compareTo(Job o) {
         
-        // this duration < input duration
-        if(this.duration < o.duration){
+        // this completionTime < input completionTime
+        if(this.completionTime < o.completionTime){
             return -1;
         }
 
-        // this duration == input duration
-        if(this.duration == o.duration){
+        // this completionTime == input completionTime
+        if(this.completionTime == o.completionTime){
             return 0;
         }
 
-        // this duration > input duration
+        // this completionTime > input completionTime
         else{
             return 1;
         }

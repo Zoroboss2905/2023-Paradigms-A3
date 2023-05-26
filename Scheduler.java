@@ -8,29 +8,38 @@
 
 import java.util.PriorityQueue;
 
+// Make scheduler a singleton and parse a reference to allstages
+
 public class Scheduler {
     private double currentTime;
     private PriorityQueue<Job> jobQueue;
 
-    public Scheduler(){
+    private static Scheduler single_instance = null;
+
+    private Scheduler(){
         currentTime = 0;
         jobQueue = new PriorityQueue<Job>();
     }
 
-    public void addToPQueue(Stage stage, double currentTime){
-        Job Job = new Job(currentTime + currentTime, stage);
-        jobQueue.offer(Job);
+    public static synchronized Scheduler getInstance(){
+        if (single_instance == null){
+            single_instance = new Scheduler();
+        }
+        return single_instance;
+    }
+
+    public void addToPQueue(Stage stage, double duration){
+        Job Job = new Job(currentTime + duration, stage);    // Create new Job that completes at current+duration.
+        jobQueue.offer(Job);                                 // Insert Sort into the Priority Queue based on the completionTime.
     }
 
     public Job removeJob(){
-        Job outputJob = jobQueue.poll();
-
-        currentTime = outputJob.getCurrentTime();
+        Job outputJob = jobQueue.poll();                // Takes the top job and outputs it.
+        currentTime = outputJob.getCompletionTime();    // Set overall time to this job's completion time.
         return outputJob;
     }
 
     public double getCurrentTime(){
         return currentTime;
     }
-
 }

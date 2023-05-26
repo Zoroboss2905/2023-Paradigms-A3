@@ -28,22 +28,20 @@ public class StartStage extends Stage{
     private double bTime;           // Blocked Time
 
     public StartStage(String newName, int newMean, int newRange, Scheduler newScheduler){
-        sTime = 0;
-        wTime = 0;
-        bTime = 0;
-        lastUpdate = 0;
-        processingTime = 0;
-        name = newName;
-        storedWidget = null;
-        mean = newMean;
-        range = newRange;
-        scheduler = newScheduler;
+        super(newName, newMean, newRange, newScheduler);
+        prev = null;
     }
 
-    public abstract int getWidgetSpawnCount();
-    public abstract void spawnWidget();
+    public int getWidgetSpawnCount(){
+        return 0;
+    }
+    public void spawnWidget(){
 
-    public abstract void go(double t);
+    }
+
+    public void go(double t){
+
+    }
 
     public void setNext(Queue newNext){
         next = newNext;
@@ -102,7 +100,7 @@ public class StartStage extends Stage{
             return true;
         }
     }
-    
+    // The Start Stage is Unique in the way that instead of pulling from a previous queue, it CREATES a new widget, processes it and moves it forwards into the next queue.
     public boolean pull(){
         // Take Widget from prev queue and add it to this stage.
         // Preconditions: Stage empty, Widget in prev queue
@@ -117,7 +115,7 @@ public class StartStage extends Stage{
             setProcessingTime(mean, range);
             storedWidget = tempWidget;
             scheduler.addToPQueue(this, getProcessingTime());
-            // also apply a time and create a new job.
+            storedWidget.appendPath(name);
             return true;
         }
     }

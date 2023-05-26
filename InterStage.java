@@ -26,23 +26,16 @@ public class InterStage extends Stage{
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public Stage(String newName, int newMean, int newRange, Scheduler newScheduler){
-        sTime = 0;
-        wTime = 0;
-        bTime = 0;
-        lastUpdate = 0;
-        processingTime = 0;
-        name = newName;
-        storedWidget = null;
-        mean = newMean;
-        range = newRange;
-        scheduler = newScheduler;
+    public InterStage(String newName, int newMean, int newRange, Scheduler newScheduler){
+        super(newName, newMean, newRange, newScheduler);
     }
 
-    public abstract int getWidgetSpawnCount();
-    public abstract void spawnWidget();
+    public int getWidgetSpawnCount(){return 0;}     // Does nothing in this Stage
+    public void spawnWidget(){}                     // Does nothing in this Stage
 
-    public abstract void go(double t);
+    public void go(double t){
+
+    }
 
     public void setNext(Queue newNext){
         next = newNext;
@@ -116,7 +109,7 @@ public class InterStage extends Stage{
             setProcessingTime(mean, range);
             storedWidget = tempWidget;
             scheduler.addToPQueue(this, getProcessingTime());
-            // also apply a time and create a new job.
+            storedWidget.appendPath(name);
             return true;
         }
     }

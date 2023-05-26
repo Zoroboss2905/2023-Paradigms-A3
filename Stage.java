@@ -116,7 +116,7 @@ public abstract class Stage {
             setProcessingTime(mean, range);
             storedWidget = tempWidget;
             scheduler.addToPQueue(this, getProcessingTime());
-            // also apply a time and create a new job.
+            storedWidget.appendPath(name);
             return true;
         }
     }

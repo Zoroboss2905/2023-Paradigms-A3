@@ -27,22 +27,16 @@ public class EndStage extends Stage{
     private double bTime;           // Blocked Time
 
     public EndStage(String newName, int newMean, int newRange, Scheduler newScheduler){
-        sTime = 0;
-        wTime = 0;
-        bTime = 0;
-        lastUpdate = 0;
-        processingTime = 0;
-        name = newName;
-        storedWidget = null;
-        mean = newMean;
-        range = newRange;
-        scheduler = newScheduler;
+        super(newName, newMean, newRange, newScheduler);
+        next = null;
+    }      
+
+    public int getWidgetSpawnCount(){return 0;}     // Does nothing in this Stage
+    public void spawnWidget(){}                     // Does nothing in this Stage
+
+    public void go(double t){
+
     }
-
-    public abstract int getWidgetSpawnCount();
-    public abstract void spawnWidget();
-
-    public abstract void go(double t);
 
     public void setNext(Queue newNext){
         next = newNext;
@@ -116,7 +110,7 @@ public class EndStage extends Stage{
             setProcessingTime(mean, range);
             storedWidget = tempWidget;
             scheduler.addToPQueue(this, getProcessingTime());
-            // also apply a time and create a new job.
+            storedWidget.appendPath(name);
             return true;
         }
     }

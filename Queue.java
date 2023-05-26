@@ -15,8 +15,8 @@ public class Queue {
     int QMax;
     String name;
     
-
     ArrayList<Widget> myList = new ArrayList<Widget>();
+
     // Arraylist of Widgets.
     Queue(int newQMax, String newName){
         QMax = newQMax;
@@ -25,8 +25,16 @@ public class Queue {
     Queue(){}  
 
 
+    public boolean isFull(){
+        if(myList.size()==QMax){
+            return true;
+        } else{
+            return false;
+        }
+    }
+
     public boolean addToQueue(Widget newWidget){
-        if(myList.size() < QMax){
+        if(isFull() == false){
             myList.add(newWidget);
             return true;
         } else {
@@ -34,7 +42,9 @@ public class Queue {
         }
     }
 
-    public void removeFromQueue(){
+    public Widget removeFromQueue(){
+        Widget tempWidget = myList.get(0);
         myList.remove(0);
+        return tempWidget;
     }
 }

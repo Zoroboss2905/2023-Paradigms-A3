@@ -5,6 +5,7 @@
 // 12/05/2023   ||  12/05/2023
 //
 
+import java.util.Random;
 
 public abstract class Stage {
     
@@ -14,6 +15,7 @@ public abstract class Stage {
     private double lastUpdate;
     private double processingTime;
     private String name;
+    private Widget storedWidget;
 
 
     // STAGE STATS
@@ -21,25 +23,16 @@ public abstract class Stage {
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public Stage(String name){
+    public Stage(String newName){
         sTime = 0;
         wTime = 0;
         bTime = 0;
         lastUpdate = 0;
         processingTime = 0;
+        name = newName;
+        storedWidget = null;
     }
 
-
-    // Stage stat Getters
-    public double getSTime(){
-        return this.sTime;
-    }
-    public double getWTime(){
-        return this.wTime;
-    }
-    public double getBTime(){
-        return this.bTime;
-    }
     public abstract int getWidgetSpawnCount();
     public abstract void spawnWidget();
 
@@ -51,20 +44,54 @@ public abstract class Stage {
     public void setPrev(Queue newPrev){
         prev = newPrev;
     }
-
-
-    public void addSTime(){
-
-    }
-    public void addWTime(){
-
-    }
-    public void addBTime(){
-        
+    public void setName(String newName){
+        name = newName;
     }
 
-    public void push(){
+
+    public void addSTime(double addTime){
+        sTime = sTime + addTime;
+    }
+    public void addWTime(double addTime){
+        wTime = wTime + addTime;
+    }
+    public void addBTime(double addTime){
+        bTime = bTime + addTime;
+    }
+    public void setProcessingTime(double newPTime){
+        processingTime = newPTime;
+    }
+    public void setProcessingTime(int m, int n){
+        Random r = new Random();
+        double d = r.nextDouble();
+        processingTime = m+n*(d-0.5);
+    }
+
+    public String getSTime(){
+        return String.format("%4.2f", sTime);
+    }
+    public String getWTime(){
+        // This one outputs as a percentage, so figure that out first.
+        double wUpTime = wTime/(sTime+wTime+bTime);
+        return String.format("%4.2f", wUpTime);
+    }
+    public String getBTime(){
+        return String.format("%4.2f", bTime);
+    }
+    public double getProcessingTime(){
+        return processingTime;
+    }
+
+    public boolean push(){
         // Take Widget in this stage and move it to the next queue, if possible (not blocked).
+        if(next.isFull()){
+            currentState = 1;
+            return false;
+        } else {
+            next.addToQueue(storedWidget);
+            storedWidget = null;
+            return true;
+        }
     }
     public void pull(){
         // Take Widget from prev queue and add it to this stage.
@@ -73,8 +100,30 @@ public abstract class Stage {
 
     public void setCurrentState(int s, double currentTime){
         if (currentState == s){
+            return;
+        } else {
+            double difference = currentTime - lastUpdate;
+            if(difference < 0){
+                // Difference should never be negative
+                System.out.println("Somehow, "+this.name+"has travelled back in time");
+            }
+            if(currentState == -1){
+                // Stage is starved
+                addSTime(difference);
+            } else if(currentState == 0){
+                // Stage is Working
+                addWTime(difference);
+            } else if(currentState == 1){
+                // Stage is Blocked
+                addBTime(difference);
+            } else {
+                // The 'State' of the Stage should always be either -1, 0 or 1.
+                System.out.println("Stage of Stage: " + this.name + " is Invalid");
+            }
+            currentState = s;
+            lastUpdate = currentTime;
 
-        } 
+        }
     }
 
 }

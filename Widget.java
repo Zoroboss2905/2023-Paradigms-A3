@@ -21,6 +21,11 @@ public class Widget{
         path = path + addon + "-";
     }
 
+    public String whereDidWeComeFrom(){
+        String aOrB = "" + uniqueID.charAt(uniqueID.length()-1);        // Last Item in UID (either a of b)
+        return aOrB;        
+    }
+
     public int howDIdWeGetHere(){
         String s3 = path.charAt(12) + "";
         String s5 = path.charAt(19) + "";

@@ -9,8 +9,8 @@ import java.util.Random;
 
 public abstract class Stage {
     
-    private Queue next;
-    private Queue prev;
+    private InterstageStorage next;
+    private InterstageStorage prev;
     private int currentState;       // Either -1: starved, 0: busy or 1: blocked
     private double lastUpdate;
     private double processingTime;
@@ -18,7 +18,6 @@ public abstract class Stage {
     private Widget storedWidget;
     private int mean;
     private int range;
-    private Scheduler scheduler;
 
 
     // STAGE STATS
@@ -26,7 +25,7 @@ public abstract class Stage {
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public Stage(String newName, int newMean, int newRange, Scheduler newScheduler){
+    public Stage(String newName, int newMean, int newRange){
         sTime = 0;
         wTime = 0;
         bTime = 0;
@@ -36,23 +35,43 @@ public abstract class Stage {
         storedWidget = null;
         mean = newMean;
         range = newRange;
-        scheduler = newScheduler;
     }
 
     public abstract int getWidgetSpawnCount();
     public abstract void spawnWidget();
 
-    public abstract void go(double t);
+    public abstract void go();
 
-    public void setNext(Queue newNext){
+    public void setNext(InterstageStorage newNext){
         next = newNext;
     }
-    public void setPrev(Queue newPrev){
+    public void setPrev(InterstageStorage newPrev){
         prev = newPrev;
     }
     public void setName(String newName){
         name = newName;
     }
+    public InterstageStorage getNext(){
+        return next;
+    }
+    public InterstageStorage getPrev(){
+        return prev;
+    }
+    public String getName(){
+        return name;
+    }
+
+    public int getMean(){
+        return mean;
+    }
+    public int getRange(){
+        return range;
+    }
+    public Widget getStoredWidget(){
+        return storedWidget;
+    }
+
+
 
 
     public void addSTime(double addTime){
@@ -88,38 +107,9 @@ public abstract class Stage {
         return processingTime;
     }
 
-    public boolean push(){
-        // First check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
-        if(next.isFull()){
-            currentState = 1;
-            return false;
-        } else {
-            // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
-            next.addToQueue(storedWidget);
-            storedWidget = null;
-            currentState = -1;
-            return true;
-        }
-    }
+    public abstract boolean push();
     
-    public boolean pull(){
-        // Take Widget from prev queue and add it to this stage.
-        // Preconditions: Stage empty, Widget in prev queue
-        if(storedWidget != null){
-            return false;   // Already has a widget inside.
-        } else if(prev.isEmpty() == true){
-            currentState = -1;
-            return false;   // There is nothing to pull, therefore Starved.
-        } else{
-            // All conditions are met, pull the item from prev and place it in the Stage.
-            Widget tempWidget = prev.removeFromQueue();
-            setProcessingTime(mean, range);
-            storedWidget = tempWidget;
-            scheduler.addToPQueue(this, getProcessingTime());
-            storedWidget.appendPath(name);
-            return true;
-        }
-    }
+    public abstract boolean pull();
 
     public void setCurrentState(int s, double currentTime){
         if (currentState == s){

@@ -10,8 +10,8 @@ import java.util.Random;
 
 public class StartStage extends Stage{
 
-    private Queue next;
-    private Queue prev;
+    private InterstageStorage next;
+    private InterstageStorage prev = null;
     private int currentState;       // Either -1: starved, 0: busy or 1: blocked
     private double lastUpdate;
     private double processingTime;
@@ -19,7 +19,8 @@ public class StartStage extends Stage{
     private Widget storedWidget;
     private int mean;
     private int range;
-    private Scheduler scheduler;
+    private Scheduler scheduler = Scheduler.getInstance();
+    private GetID idGen = GetID.getInstance();
 
 
     // STAGE STATS
@@ -27,8 +28,8 @@ public class StartStage extends Stage{
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public StartStage(String newName, int newMean, int newRange, Scheduler newScheduler){
-        super(newName, newMean, newRange, newScheduler);
+    public StartStage(String newName, int newMean, int newRange){
+        super(newName, newMean, newRange);
         prev = null;
     }
 
@@ -39,18 +40,28 @@ public class StartStage extends Stage{
 
     }
 
-    public void go(double t){
-
+    public void go(){
+        this.push();
+        this.pull();
     }
 
-    public void setNext(Queue newNext){
+    public void setNext(InterstageStorage newNext){
         next = newNext;
     }
-    public void setPrev(Queue newPrev){
+    public void setPrev(InterstageStorage newPrev){
         prev = newPrev;
     }
     public void setName(String newName){
         name = newName;
+    }
+    public InterstageStorage getNext(){
+        return next;
+    }
+    public InterstageStorage getPrev(){
+        return prev;
+    }
+    public String getName(){
+        return name;
     }
 
 
@@ -88,34 +99,39 @@ public class StartStage extends Stage{
     }
 
     public boolean push(){
-        // First check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
-        if(next.isFull()){
-            currentState = 1;
+        // First check this stage to make sure it contains a Widget and it processing, if not then push does nothing.
+        if(storedWidget != null){
+            setCurrentState(-1, scheduler.getCurrentTime());                // Starved
             return false;
-        } else {
-            // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
-            next.addToQueue(storedWidget);
-            storedWidget = null;
-            currentState = -1;
-            return true;
+        } else{
+            // Then check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
+            if(next.isFull()){
+                setCurrentState(1, scheduler.getCurrentTime());           // Blocked
+                return false;
+            } else {
+                // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
+                next.addToQueue(storedWidget, scheduler.getCurrentTime());
+                storedWidget = null;
+                setCurrentState(-1, scheduler.getCurrentTime());            // Starved
+                return true;
+            }
         }
     }
-    // The Start Stage is Unique in the way that instead of pulling from a previous queue, it CREATES a new widget, processes it and moves it forwards into the next queue.
+
+    // The Start Stage is Unique in the way that instead of pulling from a previous queue, it CREATES a new widget.
     public boolean pull(){
-        // Take Widget from prev queue and add it to this stage.
-        // Preconditions: Stage empty, Widget in prev queue
         if(storedWidget != null){
             return false;   // Already has a widget inside.
-        } else if(prev.isEmpty() == true){
-            currentState = -1;
-            return false;   // There is nothing to pull, therefore Starved.
-        } else{
-            // All conditions are met, pull the item from prev and place it in the Stage.
-            Widget tempWidget = prev.removeFromQueue();
-            setProcessingTime(mean, range);
-            storedWidget = tempWidget;
-            scheduler.addToPQueue(this, getProcessingTime());
-            storedWidget.appendPath(name);
+        } else {
+            // Begin Generating a new Widget
+            String identifier = "" + this.name.charAt(2);         // For UID generation purposes
+            String newID = idGen.getID();
+            String tempUID = newID + identifier;                        // Set the UID in accordance with the Stage it was made in.
+            setProcessingTime(mean,range);                              // Generate/Set new processing time for Stage
+            storedWidget = new Widget(tempUID);                         // Create and hold new Widget
+            scheduler.addToPQueue(this, getProcessingTime());           // Create Job
+            storedWidget.appendPath(name);                              // Add this location to widget path storage
+            setCurrentState(0, scheduler.getCurrentTime());           // Working
             return true;
         }
     }
@@ -145,5 +161,14 @@ public class StartStage extends Stage{
             currentState = s;
             lastUpdate = currentTime;
         }
+    }
+
+    public String toString(){
+        String output = "";  
+
+        //      stage name        work[%]                starve[t]              block[t]
+        output += name + "\t\t" + getWTime() + "%\t\t" + getSTime() + "\t\t" + getBTime() + "\n";
+
+        return output;
     }
 }

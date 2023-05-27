@@ -34,7 +34,7 @@ public class Scheduler {
     }
 
     public Job removeJob(){
-        Job outputJob = jobQueue.poll();                // Takes the top job and outputs it.
+        Job outputJob = jobQueue.poll();                // Takes the top job and removes it from the top of the list.
         currentTime = outputJob.getCompletionTime();    // Set overall time to this job's completion time.
         return outputJob;
     }

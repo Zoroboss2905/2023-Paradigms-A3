@@ -9,8 +9,8 @@ import java.util.Random;
 
 public class EndStage extends Stage{
 
-    private Queue next;
-    private Queue prev;
+    private InterstageStorage next;
+    private InterstageStorage prev;
     private int currentState;       // Either -1: starved, 0: busy or 1: blocked
     private double lastUpdate;
     private double processingTime;
@@ -18,7 +18,8 @@ public class EndStage extends Stage{
     private Widget storedWidget;
     private int mean;
     private int range;
-    private Scheduler scheduler;
+    private Scheduler scheduler = Scheduler.getInstance();
+    private StatStore statStore = StatStore.getInstance();
 
 
     // STAGE STATS
@@ -26,26 +27,36 @@ public class EndStage extends Stage{
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public EndStage(String newName, int newMean, int newRange, Scheduler newScheduler){
-        super(newName, newMean, newRange, newScheduler);
+    public EndStage(String newName, int newMean, int newRange){
+        super(newName, newMean, newRange);
         next = null;
     }      
 
     public int getWidgetSpawnCount(){return 0;}     // Does nothing in this Stage
     public void spawnWidget(){}                     // Does nothing in this Stage
 
-    public void go(double t){
-
+    public void go(){
+        this.push();
+        this.pull();
     }
 
-    public void setNext(Queue newNext){
+    public void setNext(InterstageStorage newNext){
         next = newNext;
     }
-    public void setPrev(Queue newPrev){
+    public void setPrev(InterstageStorage newPrev){
         prev = newPrev;
     }
     public void setName(String newName){
         name = newName;
+    }
+    public InterstageStorage getNext(){
+        return next;
+    }
+    public InterstageStorage getPrev(){
+        return prev;
+    }
+    public String getName(){
+        return name;
     }
 
 
@@ -82,18 +93,14 @@ public class EndStage extends Stage{
         return processingTime;
     }
 
+    // EndStage is unique in the way that push() cannot fail. it sends the widget to the StatStore to be processed instead.
     public boolean push(){
-        // First check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
-        if(next.isFull()){
-            currentState = 1;
-            return false;
-        } else {
-            // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
-            next.addToQueue(storedWidget);
+            // Take the current widget and move it to the StatStore.
+            statStore.addCompleteWidget(storedWidget);
+            // All else is the same
             storedWidget = null;
-            currentState = -1;
+            setCurrentState(-1, scheduler.getCurrentTime());           // Starved
             return true;
-        }
     }
     
     public boolean pull(){
@@ -102,15 +109,16 @@ public class EndStage extends Stage{
         if(storedWidget != null){
             return false;   // Already has a widget inside.
         } else if(prev.isEmpty() == true){
-            currentState = -1;
+            setCurrentState(-1, scheduler.getCurrentTime());           // Working
             return false;   // There is nothing to pull, therefore Starved.
         } else{
             // All conditions are met, pull the item from prev and place it in the Stage.
-            Widget tempWidget = prev.removeFromQueue();
+            Widget tempWidget = prev.removeFromQueue(scheduler.getCurrentTime());
             setProcessingTime(mean, range);
             storedWidget = tempWidget;
             scheduler.addToPQueue(this, getProcessingTime());
             storedWidget.appendPath(name);
+            setCurrentState(0, scheduler.getCurrentTime());           // Working
             return true;
         }
     }

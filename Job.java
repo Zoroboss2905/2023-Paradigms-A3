@@ -21,8 +21,8 @@ public class Job implements Comparable<Job>{
         completionTime = newCompletionTime;
     }
 
-    public void finishJob(double time){
-        currentStage.go(time);
+    public void finishJob(){
+        currentStage.go();
     }
 
     public void setCurrentStage(Stage newCurrentStage){

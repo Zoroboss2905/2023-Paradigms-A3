@@ -7,10 +7,10 @@
 
 import java.util.Random;
 
-public class InterStage extends Stage{
+public class MidStage extends Stage{
 
-    private Queue next;
-    private Queue prev;
+    private InterstageStorage next;
+    private InterstageStorage prev;
     private int currentState;       // Either -1: starved, 0: busy or 1: blocked
     private double lastUpdate;
     private double processingTime;
@@ -18,7 +18,7 @@ public class InterStage extends Stage{
     private Widget storedWidget;
     private int mean;
     private int range;
-    private Scheduler scheduler;
+    private Scheduler scheduler = Scheduler.getInstance();
 
 
     // STAGE STATS
@@ -26,25 +26,35 @@ public class InterStage extends Stage{
     private double wTime;           // Working Time
     private double bTime;           // Blocked Time
 
-    public InterStage(String newName, int newMean, int newRange, Scheduler newScheduler){
-        super(newName, newMean, newRange, newScheduler);
+    public MidStage(String newName, int newMean, int newRange){
+        super(newName, newMean, newRange);
     }
 
     public int getWidgetSpawnCount(){return 0;}     // Does nothing in this Stage
     public void spawnWidget(){}                     // Does nothing in this Stage
 
-    public void go(double t){
-
+    public void go(){
+        this.push();
+        this.pull();
     }
 
-    public void setNext(Queue newNext){
+    public void setNext(InterstageStorage newNext){
         next = newNext;
     }
-    public void setPrev(Queue newPrev){
+    public void setPrev(InterstageStorage newPrev){
         prev = newPrev;
     }
     public void setName(String newName){
         name = newName;
+    }
+    public InterstageStorage getNext(){
+        return next;
+    }
+    public InterstageStorage getPrev(){
+        return prev;
+    }
+    public String getName(){
+        return name;
     }
 
 
@@ -82,16 +92,22 @@ public class InterStage extends Stage{
     }
 
     public boolean push(){
-        // First check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
-        if(next.isFull()){
-            currentState = 1;
+        // First check this stage to make sure it contains a Widget and it processing, if not then push does nothing.
+        if(storedWidget != null){
+            setCurrentState(-1, scheduler.getCurrentTime());                // Starved
             return false;
-        } else {
-            // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
-            next.addToQueue(storedWidget);
-            storedWidget = null;
-            currentState = -1;
-            return true;
+        } else{
+            // Then check to see if the queue after this one is full, if so, this stage is now blocked and returns false, so the JOB can set itself again
+            if(next.isFull()){
+                setCurrentState(1, scheduler.getCurrentTime());           // Blocked
+                return false;
+            } else {
+                // Otherwise Take Widget in this stage and move it to the next queue, if possible (not blocked).
+                next.addToQueue(storedWidget, scheduler.getCurrentTime());
+                storedWidget = null;
+                setCurrentState(-1, scheduler.getCurrentTime());            // Starved
+                return true;
+            }
         }
     }
     
@@ -101,15 +117,16 @@ public class InterStage extends Stage{
         if(storedWidget != null){
             return false;   // Already has a widget inside.
         } else if(prev.isEmpty() == true){
-            currentState = -1;
+            setCurrentState(-1, scheduler.getCurrentTime());           // Starved
             return false;   // There is nothing to pull, therefore Starved.
         } else{
             // All conditions are met, pull the item from prev and place it in the Stage.
-            Widget tempWidget = prev.removeFromQueue();
+            Widget tempWidget = prev.removeFromQueue(scheduler.getCurrentTime());
             setProcessingTime(mean, range);
             storedWidget = tempWidget;
             scheduler.addToPQueue(this, getProcessingTime());
             storedWidget.appendPath(name);
+            setCurrentState(0, scheduler.getCurrentTime());           // Working
             return true;
         }
     }
@@ -121,7 +138,7 @@ public class InterStage extends Stage{
             double difference = currentTime - lastUpdate;
             if(difference < 0){
                 // Difference should never be negative
-                System.out.println("Somehow, "+this.name+"has travelled back in time");
+                System.out.println("Somehow, "+this.name+" has travelled back in time");
             }
             if(currentState == -1){
                 // Stage is starved

@@ -29,15 +29,15 @@ public class StartStage extends Stage{
     private double bTime;           // Blocked Time
 
     public StartStage(String newName, int newMean, int newRange){
-        super(newName, newMean, newRange);
-        prev = null;
-    }
-
-    public int getWidgetSpawnCount(){
-        return 0;
-    }
-    public void spawnWidget(){
-
+        sTime = 0;
+        wTime = 0;
+        bTime = 0;
+        lastUpdate = 0;
+        processingTime = 0;
+        name = newName;
+        storedWidget = null;
+        mean = newMean;
+        range = newRange;
     }
 
     public void go(){

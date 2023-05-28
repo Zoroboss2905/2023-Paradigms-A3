@@ -28,8 +28,15 @@ public class EndStage extends Stage{
     private double bTime;           // Blocked Time
 
     public EndStage(String newName, int newMean, int newRange){
-        super(newName, newMean, newRange);
-        next = null;
+        sTime = 0;
+        wTime = 0;
+        bTime = 0;
+        lastUpdate = 0;
+        processingTime = 0;
+        name = newName;
+        storedWidget = null;
+        mean = newMean;
+        range = newRange;
     }      
 
     public int getWidgetSpawnCount(){return 0;}     // Does nothing in this Stage
@@ -95,12 +102,16 @@ public class EndStage extends Stage{
 
     // EndStage is unique in the way that push() cannot fail. it sends the widget to the StatStore to be processed instead.
     public boolean push(){
+        if(storedWidget != null){
             // Take the current widget and move it to the StatStore.
             statStore.addCompleteWidget(storedWidget);
             // All else is the same
             storedWidget = null;
             setCurrentState(-1, scheduler.getCurrentTime());           // Starved
             return true;
+        } else{
+            return false;
+        }
     }
     
     public boolean pull(){
@@ -109,7 +120,7 @@ public class EndStage extends Stage{
         if(storedWidget != null){
             return false;   // Already has a widget inside.
         } else if(prev.isEmpty() == true){
-            setCurrentState(-1, scheduler.getCurrentTime());           // Working
+            setCurrentState(-1, scheduler.getCurrentTime());           // Starved
             return false;   // There is nothing to pull, therefore Starved.
         } else{
             // All conditions are met, pull the item from prev and place it in the Stage.

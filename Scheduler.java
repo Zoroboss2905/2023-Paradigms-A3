@@ -28,6 +28,18 @@ public class Scheduler {
         return single_instance;
     }
 
+    public void setCurrentTime(double newCurrentTime){
+        currentTime = newCurrentTime;
+    }
+
+    public double getCurrentTime(){
+        return currentTime;
+    }
+
+    public Job getTopJob(){
+        return jobQueue.peek();
+    }
+
     public void addToPQueue(Stage stage, double duration){
         Job Job = new Job(currentTime + duration, stage);    // Create new Job that completes at current+duration.
         jobQueue.offer(Job);                                 // Insert Sort into the Priority Queue based on the completionTime.
@@ -37,9 +49,5 @@ public class Scheduler {
         Job outputJob = jobQueue.poll();                // Takes the top job and removes it from the top of the list.
         currentTime = outputJob.getCompletionTime();    // Set overall time to this job's completion time.
         return outputJob;
-    }
-
-    public double getCurrentTime(){
-        return currentTime;
     }
 }

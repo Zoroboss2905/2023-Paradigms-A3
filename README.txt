@@ -12,6 +12,6 @@ i have, on 4 seperate occaisions now, sat at my computer trying to figure out wh
 
 There is now not enough time for me to completely restart writing the whole program, so hopefully you can forgive the state the program is in.
 
-This is what i have, and hopefully this suffices for at least *some* marks.
+This is what i have, and hopefully this suffices for at least some marks.
 
 I apologise for the inconvenience.

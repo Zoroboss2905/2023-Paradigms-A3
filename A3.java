@@ -2,8 +2,8 @@
 // Author: Jarrod Aubin
 // Subject: SENG2200 Programming Languages and Paradigms
 // Assignment 3
-// 12/05/2023   ||  12/05/2023
-//
+// 12/05/2023
+// Last Modified: 21/07/2023
 
 
 // First test should be StartStage,Queue,EndStage
@@ -17,9 +17,9 @@ import java.util.ArrayList;
 class A3{
     public static void main(String args[]){
 
-        int M = 1000;   //Integer.parseInt(args[0]);      // Average Processing Time
-        int N = 1000;   //Integer.parseInt(args[1]);      // Range of Processing Time
-        int QMax = 7;   //Integer.parseInt(args[2]);
+        int M = Integer.parseInt(args[0]);      // Average Processing Time
+        int N = Integer.parseInt(args[1]);      // Range of Processing Time
+        int QMax = Integer.parseInt(args[2]);
         double timeLimit = 10000;            // 10 Million units of 'Time'  // TODO: Reset back to 10Mil, is currently 10K
         Stage s0a, s1;
         InterstageStorage q01;
